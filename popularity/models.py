@@ -22,6 +22,7 @@ from datetime import datetime
 
 from math import log
 
+import django
 from django.db import models, connection
 from django.db.models import F, Max
 from django.contrib.contenttypes.models import ContentType
@@ -36,7 +37,10 @@ POPULARITY_CHARAGE = float(getattr(settings, 'POPULARITY_CHARAGE', 3600))
 POPULARITY_LISTSIZE = int(getattr(settings, 'POPULARITY_LISTSIZE', 10))
 
 # Maybe they wrote their own mysql backend that *is* mysql?
-COMPATIBLE_DATABASES = getattr(settings, 'POPULARITY_COMPATABILITY_OVERRIDE', None) or ('django.db.backends.mysql',)
+if django.VERSION < (1, 2, 0):
+    COMPATIBLE_DATABASES = getattr(settings, 'POPULARITY_COMPATIBILITY_OVERRIDE', None) or ('mysql',)
+else:
+    COMPATIBLE_DATABASES = getattr(settings, 'POPULARITY_COMPATIBILITY_OVERRIDE', None) or ('django.db.backends.mysql',)
 
 
 class ViewTrackerQuerySet(models.query.QuerySet):
@@ -45,7 +49,10 @@ class ViewTrackerQuerySet(models.query.QuerySet):
     def __init__(self, model=None, *args, **kwargs):
         super(self.__class__, self).__init__(model, *args, **kwargs)
 
-        self._DATABASE_ENGINE = settings.DATABASES.get(kwargs.get('using', None) or 'default')['ENGINE']
+        if django.VERSION < (1, 2, 0):
+            self._DATABASE_ENGINE = getattr(settings, 'DATABASE_ENGINE')
+        else:
+            self._DATABASE_ENGINE = settings.DATABASES.get(kwargs.get('using', None) or 'default')['ENGINE']
         self._SQL_NOW = "'%s'"
         self._SQL_AGE = 'TIMESTAMPDIFF(SECOND, added, %(now)s)'
         self._SQL_RELVIEWS = '(views/%(maxviews)d)'
