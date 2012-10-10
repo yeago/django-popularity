@@ -17,9 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-
-from datetime import datetime
-
 from math import log
 
 import django
@@ -27,6 +24,11 @@ from django.db import models, connection
 from django.db.models import F, Max
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
+
+try:
+    from django.utils.timezone import now
+except ImportError:
+    now = datetime.datetime.now
 
 # Settings for popularity:
 # - POPULARITY_LISTSIZE; default size of the lists returned by get_most_popular etc.
@@ -76,7 +78,7 @@ class ViewTrackerQuerySet(models.query.QuerySet):
         assert self._DATABASE_ENGINE in COMPATIBLE_DATABASES, 'Database engine %s is not compatible with this functionality.'
 
         if not value:
-            value = datetime.now()
+            value = now()
 
         _SQL_NOW = self._SQL_NOW % connection.ops.value_to_db_datetime(value)
         return  _SQL_NOW
@@ -521,11 +523,11 @@ class ViewTracker(models.Model):
 
         assert qs.count() == 0 or qs.count() == 1, 'More than one ViewTracker for object %s' % content_object
 
-        rows = qs.update(views=F('views') + 1, viewed=datetime.now())
+        rows = qs.update(views=F('views') + 1, viewed=now())
 
         # This is here mainly for compatibility reasons
         if not rows:
-            qs.create(content_type=ct, object_id=content_object.pk, views=1, viewed=datetime.now())
+            qs.create(content_type=ct, object_id=content_object.pk, views=1, viewed=now())
             logging.debug('ViewTracker created for object %s' % content_object)
         else:
             logging.debug('Views updated to %d for %s' % (qs[0].views, content_object))
