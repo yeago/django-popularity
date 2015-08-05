@@ -16,11 +16,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import json
 import logging
 
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponse, HttpResponseGone
-from django.utils import simplejson
 from django.core.exceptions import ObjectDoesNotExist
 
 from .models import ViewTracker
@@ -46,7 +46,7 @@ def view_for(request, content_type_id, object_id, force_add=False):
     })
 
     if request.is_ajax():
-        return HttpResponse(simplejson.dumps(response_dict), mimetype='application/javascript')
+        return HttpResponse(json.dumps(response_dict), mimetype='application/javascript')
 
     return HttpResponse()
 

@@ -20,7 +20,7 @@ of functionality is still undocumented.
 
 Requirements
 ============
-Short answer: MySQL >= 4.1.1, Django >= 1.1
+Short answer: Django >= 1.7
 
 Long answer:
 Currently, this has only been tested for MySQL, thought it might work for Postgres and others as well (though SQLite might make some trouble out of it). If you do manage to get it to work (with or without modifications), please let me know so other users can profit from it as well.
