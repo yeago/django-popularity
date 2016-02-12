@@ -23,7 +23,7 @@ import django
 from django.db import models, connection
 from django.db.models import F, Max
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 try:
     from django.utils.timezone import now
@@ -495,7 +495,7 @@ class ViewTracker(models.Model):
 
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey('content_type', 'object_id')
 
     added = models.DateTimeField(auto_now_add=True)
     viewed = models.DateTimeField(auto_now=True)
