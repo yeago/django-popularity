@@ -18,15 +18,14 @@
 
 import logging
 
-from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save, pre_delete
-
-from models import ViewTracker
 
 VERSION = (0, 1, None)
 
 
 def post_save_handler(signal, sender, instance, created, raw, **kwargs):
+    from django.contrib.contenttypes.models import ContentType
+    from models import ViewTracker
     if created:
         ct = ContentType.objects.get_for_model(sender)
         if ViewTracker.objects.filter(content_type=ct, object_id=instance.pk).count() == 0:
@@ -37,12 +36,15 @@ def post_save_handler(signal, sender, instance, created, raw, **kwargs):
 
 
 def pre_delete_handler(signal, sender, instance, **kwargs):
+    from django.contrib.contenttypes.models import ContentType
+    from models import ViewTracker
     ct = ContentType.objects.get_for_model(sender)
     tracker = ViewTracker.objects.filter(content_type=ct, object_id=instance.pk).delete()
     logging.debug('ViewTracker automatically deleted for object %s' % instance)
 
 
 def register(mymodel):
+    from models import ViewTracker
     assert not issubclass(mymodel, ViewTracker), 'ViewTrackers cannot have ViewTrackers... you fool. Model: %s' % mymodel
 
     post_save.connect(post_save_handler, sender=mymodel)
