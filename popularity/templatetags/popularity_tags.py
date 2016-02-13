@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django import template
-from django.apps.apps import get_model
+from django.apps import apps
 
 from popularity.models import ViewTracker
 from django.contrib.contenttypes.models import ContentType
@@ -99,7 +99,7 @@ class MostPopularForModelNode(template.Node):
         self.limit = limit
 
     def render(self, context):
-        model = get_model(*self.model.split('.'))
+        model = apps.get_model(*self.model.split('.'))
         if model is None:
             raise template.TemplateSyntaxError("most_popular_for_model tag was given an invalid model: %s" % self.model)
         context[self.context_var] = ViewTracker.objects.get_for_model(model=model).get_most_popular(limit=self.limit)
@@ -113,7 +113,7 @@ class MostViewedForModelNode(template.Node):
         self.limit = limit
 
     def render(self, context):
-        model = get_model(*self.model.split('.'))
+        model = apps.get_model(*self.model.split('.'))
         if model is None:
             raise template.TemplateSyntaxError("most_viewed_for_model tag was given an invalid model: %s" % self.model)
         context[self.context_var] = ViewTracker.objects.get_for_model(model=model).get_most_viewed(limit=self.limit)
@@ -127,7 +127,7 @@ class RecentlyViewedForModelNode(template.Node):
         self.limit = limit
 
     def render(self, context):
-        model = get_model(*self.model.split('.'))
+        model = apps.get_model(*self.model.split('.'))
         if model is None:
             raise template.TemplateSyntaxError("recently_viewed_for_model tag was given an invalid model: %s" % self.model)
         context[self.context_var] = ViewTracker.objects.get_for_model(model=model).get_recently_viewed(limit=self.limit)
@@ -141,7 +141,7 @@ class RecentlyAddedForModelNode(template.Node):
         self.limit = limit
 
     def render(self, context):
-        model = get_model(*self.model.split('.'))
+        model = apps.get_model(*self.model.split('.'))
         if model is None:
             raise template.TemplateSyntaxError("recently_added_for_model tag was given an invalid model: %s" % self.model)
         context[self.context_var] = ViewTracker.objects.get_for_model(model=model).get_recently_added(limit=self.limit)
