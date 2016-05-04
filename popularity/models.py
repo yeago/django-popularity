@@ -18,9 +18,6 @@
 
 import logging
 
-from django.contrib.contenttypes.models import ContentType
-from django.db.models.signals import post_save, pre_delete
-
 from datetime import datetime
 
 from math import log
@@ -29,6 +26,7 @@ import django
 from django.db import models, connection
 from django.db.models import F, Max
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.signals import post_save, pre_delete
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.core.cache import cache
 
@@ -209,6 +207,7 @@ class ViewTrackerQuerySet(models.query.QuerySet):
 
         maxpopularity = relative_to.extra(select={'popularity': SQL_POPULARITY}).aggregate(models.Max('popularity'))['popularity__max']
 
+        # ... below... bug?
         SQL_RELPOPULARITY = self._SQL_RELPOPULARITY % {'popularity': SQL_POPULARITY,
                                                        'maxpopularity': maxpopularity}
 
@@ -545,7 +544,7 @@ class ViewTracker(models.Model):
 
         """ If we don't have any views, return 0. """
 
-        cache_timeout = getattr(settings, 'POPULARITY_CACHE_VIEW_TIMEOUT',False)
+        cache_timeout = getattr(settings, 'POPULARITY_CACHE_VIEW_TIMEOUT', False)
 
         if cache_timeout:
             ct = ContentType.objects.get_for_model(content_object)
@@ -555,7 +554,7 @@ class ViewTracker(models.Model):
 
             if cached_val:
                 return cached_val
-                
+
         try:
             view_count = cls.objects.get_for_object(content_object).views or 0
         except ViewTracker.DoesNotExist:
