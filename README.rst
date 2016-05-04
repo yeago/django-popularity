@@ -30,18 +30,6 @@ is as of now not yet mature enough.
 
 Installation
 ============
-#)  Get it from the Cheese Shop::
-
-	easy_install django-popularity
-
-    **Or** get the latest & greatest from Github and link it to your
-    application tree::
-
-	git clone git://github.com/dokterbob/django-popularity.git
-	ln -s django-popularity/popularity $PROJECT_DIR/popularity
-
-    (Here `$PROJECT_DIR` is your project root directory.)
-
 #)  Add popularity to `INSTALLED_APPS` in settings.py::
 
 	INSTALLED_APPS = (
