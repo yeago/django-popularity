@@ -32,10 +32,15 @@ register = template.Library()
 
 @register.filter
 def viewtrack(value):
-    ''' Add reference to script for adding a view to an object's tracker. 
-        Usage: {{ object|viewtrack }}
-        This will be substituted by: 'add_view_for(content_type_id, object_id)'
-    '''
+    """
+    Add reference to script for adding a view to an object's tracker.
+
+    Usage:
+
+        {{ object|viewtrack }}
+
+    This will be substituted by: 'add_view_for(content_type_id, object_id)'
+    """
     ct = ContentType.objects.get_for_model(value)
     return 'add_view_for(%d,%d)' % (ct.pk, value.pk)
 
@@ -57,24 +62,20 @@ def viewtrack_async(instance, request):
 
 
 def validate_template_tag_params(bits, arguments_count, keyword_positions):
-    '''
-        Raises exception if passed params (`bits`) do not match signature.
-        Signature is defined by `bits_len` (acceptible number of params) and
-        keyword_positions (dictionary with positions in keys and keywords in values,
-        for ex. {2:'by', 4:'of', 5:'type', 7:'as'}).
-    '''
+    """
+    Raises exception if passed params (`bits`) do not match signature.
 
-    if len(bits) != arguments_count+1:
+    Signature is defined by `bits_len` (acceptible number of params) and
+    keyword_positions (dictionary with positions in keys and keywords in values,
+    for ex. {2:'by', 4:'of', 5:'type', 7:'as'}).
+    """
+    if len(bits) != (arguments_count + 1):
         raise template.TemplateSyntaxError("'%s' tag takes %d arguments" % (bits[0], arguments_count,))
 
     for pos in keyword_positions:
         value = keyword_positions[pos]
         if bits[pos] != value:
             raise template.TemplateSyntaxError("argument #%d to '%s' tag must be '%s'" % (pos, bits[0], value))
-
-    return ''
-
-# Nodes
 
 
 class ViewsForObjectNode(template.Node):
@@ -107,7 +108,7 @@ class ViewsForObjectsNode(template.Node):
         for row in queryset:
             view_dict[row.object_id] = row.views
         for object in objects:
-            object.__setattr__(self.var_name, view_dict.get(object.id,0))
+            object.__setattr__(self.var_name, view_dict.get(object.id, 0))
         return ''
 
 
@@ -120,7 +121,7 @@ class MostPopularForModelNode(template.Node):
     def render(self, context):
         model = apps.get_model(*self.model.split('.'))
         if model is None:
-            raise template.TemplateSyntaxError('most_popular_for_model tag was given an invalid model: %s' % self.model)
+            raise template.TemplateSyntaxError("most_popular_for_model tag was given an invalid model: %s" % self.model)
         context[self.context_var] = ViewTracker.objects.get_for_model(model=model).get_most_popular(limit=self.limit)
         return ''
 
@@ -134,7 +135,7 @@ class MostViewedForModelNode(template.Node):
     def render(self, context):
         model = apps.get_model(*self.model.split('.'))
         if model is None:
-            raise template.TemplateSyntaxError('most_viewed_for_model tag was given an invalid model: %s' % self.model)
+            raise template.TemplateSyntaxError("most_viewed_for_model tag was given an invalid model: %s" % self.model)
         context[self.context_var] = ViewTracker.objects.get_for_model(model=model).get_most_viewed(limit=self.limit)
         return ''
 
@@ -148,7 +149,7 @@ class RecentlyViewedForModelNode(template.Node):
     def render(self, context):
         model = apps.get_model(*self.model.split('.'))
         if model is None:
-            raise template.TemplateSyntaxError('recently_viewed_for_model tag was given an invalid model: %s' % self.model)
+            raise template.TemplateSyntaxError("recently_viewed_for_model tag was given an invalid model: %s" % self.model)
         context[self.context_var] = ViewTracker.objects.get_for_model(model=model).get_recently_viewed(limit=self.limit)
         return ''
 
@@ -162,7 +163,7 @@ class RecentlyAddedForModelNode(template.Node):
     def render(self, context):
         model = apps.get_model(*self.model.split('.'))
         if model is None:
-            raise template.TemplateSyntaxError('recently_added_for_model tag was given an invalid model: %s' % self.model)
+            raise template.TemplateSyntaxError("recently_added_for_model tag was given an invalid model: %s" % self.model)
         context[self.context_var] = ViewTracker.objects.get_for_model(model=model).get_recently_added(limit=self.limit)
         return ''
 
@@ -178,7 +179,7 @@ def views_for_object(parser, token):
 
     """
     bits = token.contents.split()
-    validate_template_tag_params(bits, 3, {2:'as'})
+    validate_template_tag_params(bits, 3, {2: 'as'})
 
     return ViewsForObjectNode(bits[1], bits[3])
 
@@ -196,7 +197,7 @@ def views_for_objects(parser, token):
         {% endfor %}
     """
     bits = token.contents.split()
-    validate_template_tag_params(bits, 3, {2:'as'})
+    validate_template_tag_params(bits, 3, {2: 'as'})
 
     return ViewsForObjectsNode(bits[1], bits[3])
 
@@ -215,10 +216,10 @@ def most_popular_for_model(parser, token):
     """
     bits = token.contents.split()
     if len(bits) > 4:
-        validate_template_tag_params(bits, 5, {2:'as', 4:'limit'})
+        validate_template_tag_params(bits, 5, {2: 'as', 4: 'limit'})
         return MostPopularForModelNode(bits[1], bits[3], bits[5])
     else:
-        validate_template_tag_params(bits, 3, {2:'as'})
+        validate_template_tag_params(bits, 3, {2: 'as'})
         return MostPopularForModelNode(bits[1], bits[3])
 
 
@@ -236,10 +237,10 @@ def most_viewed_for_model(parser, token):
     """
     bits = token.contents.split()
     if len(bits) > 4:
-        validate_template_tag_params(bits, 5, {2:'as', 4:'limit'})
+        validate_template_tag_params(bits, 5, {2: 'as', 4: 'limit'})
         return MostViewedForModelNode(bits[1], bits[3], bits[5])
     else:
-        validate_template_tag_params(bits, 3, {2:'as'})
+        validate_template_tag_params(bits, 3, {2: 'as'})
         return MostViewedForModelNode(bits[1], bits[3])
 
 
@@ -257,10 +258,10 @@ def recently_viewed_for_model(parser, token):
     """
     bits = token.contents.split()
     if len(bits) > 4:
-        validate_template_tag_params(bits, 5, {2:'as', 4:'limit'})
+        validate_template_tag_params(bits, 5, {2: 'as', 4: 'limit'})
         return RecentlyViewedForModelNode(bits[1], bits[3], bits[5])
     else:
-        validate_template_tag_params(bits, 3, {2:'as'})
+        validate_template_tag_params(bits, 3, {2: 'as'})
         return RecentlyViewedForModelNode(bits[1], bits[3])
 
 
@@ -278,8 +279,8 @@ def recently_added_for_model(parser, token):
     """
     bits = token.contents.split()
     if len(bits) > 4:
-        validate_template_tag_params(bits, 5, {2:'as', 4:'limit'})
+        validate_template_tag_params(bits, 5, {2: 'as', 4: 'limit'})
         return RecentlyAddedForModelNode(bits[1], bits[3], bits[5])
     else:
-        validate_template_tag_params(bits, 3, {2:'as'})
+        validate_template_tag_params(bits, 3, {2: 'as'})
         return RecentlyAddedForModelNode(bits[1], bits[3])

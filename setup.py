@@ -4,18 +4,20 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-popularity',
-    version="0.4",
-    author='Steve Yeago',
-    author_email='yeago999@gmail.com',
-    description='Managing popularitys in Django',
-    url='http://github.com/yeago/django-popularity',
-    packages=find_packages(),
+    version="0.2.2",
+    description='A generic view- and popularity tracking pluggable for Django.',
+    long_description=README,
+    author='Mathijs de Bruin',
+    author_email='drbob@dokterbob.net',
+    url='http://github.com/dokterbob/django-popularity',
+    packages=['popularity', 'popularity.templatetags'],
     include_package_data=True,
-    classifiers=[
-        "Framework :: Django",
-        "Intended Audience :: Developers",
-        "Intended Audience :: System Administrators",
-        "Operating System :: OS Independent",
-        "Topic :: Software Development"
-    ],
+    classifiers=['Development Status :: 4 - Beta',
+                 'Environment :: Web Environment',
+                 'Framework :: Django',
+                 'Intended Audience :: Developers',
+                 'License :: OSI Approved :: GNU Affero General Public License v3',
+                 'Operating System :: OS Independent',
+                 'Programming Language :: Python',
+                 'Topic :: Utilities'],
 )
