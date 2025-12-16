@@ -1,6 +1,9 @@
 name: Auto-update Django
 
 on:
+  push:
+    branches:
+      - "3.2"
   schedule:
     - cron: "0 4 * * 1"   # weekly
   workflow_dispatch:
@@ -32,3 +35,4 @@ jobs:
           commit_message: "chore: auto-update Django (3.2.x)"
           branch: auto/django-update
           create_branch: true
+
