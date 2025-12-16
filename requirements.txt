@@ -1,1 +1,5 @@
-Django>=3.2,<3.3
+asgiref==3.11.0
+Django==3.2.25
+pytz==2025.2
+sqlparse==0.5.4
+typing_extensions==4.15.0
