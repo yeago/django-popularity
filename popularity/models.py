@@ -30,6 +30,7 @@ from django.db.models.expressions import F
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.core.cache import cache
+from django.db.models.functions import Random
 
 # Settings for popularity:
 # - POPULARITY_LISTSIZE; default size of the lists returned by get_most_popular etc.
@@ -56,7 +57,7 @@ class ViewTrackerQuerySet(models.query.QuerySet):
         self._SQL_NOVELTY = '(%(factor)s * EXP(%(logscaling)s * %(age)s/%(charage)s) + %(offset)s)'
         self._SQL_POPULARITY = '(views/%(age)s)'
         self._SQL_RELPOPULARITY = '(%(popularity)s/%(maxpopularity)s)'
-        self._SQL_RANDOM = models.functions.Random
+        self._SQL_RANDOM = Random
         self._SQL_RELEVANCE = '%(relpopularity)s * %(novelty)s'
         self._SQL_ORDERING = '%(relview)f * %(relview_sql)s + \
                               %(relage)f  * %(relage_sql)s + \
