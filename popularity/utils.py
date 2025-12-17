@@ -1,10 +1,5 @@
 from django.core.validators import validate_ipv46_address
 from django.contrib.contenttypes.models import ContentType
-
-try:
-    from popularity.tasks import viewtrack as viewtrack_task
-except ImportError:
-    viewtrack_task = None  # Celery wasn't found
 from django.core.exceptions import ValidationError
 
 
@@ -28,9 +23,11 @@ def _unwrap(obj):
 
 
 def viewtrack(request, instance):
-    if viewtrack_task is None:
+    try:
+        from popularity.tasks import viewtrack as viewtrack_task
+    except ImportError:
         raise Exception("You must install celery to use this templatetag")
-
+ 
     request = _unwrap(request)
     if request is None or not hasattr(request, "META"):
         return  # no request context (celery/template render/etc)
